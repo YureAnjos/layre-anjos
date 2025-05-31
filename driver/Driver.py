@@ -88,6 +88,8 @@ class Driver:
     except Exception as ex:
       print(ex)
 
+    self.browser.quit()
+
     return fileName
 
 driver = Driver()
