@@ -16,6 +16,9 @@ class Driver:
 
     self._destDir = os.path.join(os.getcwd(), 'files', 'products')
 
+    if not os.path.exists(self._destDir):
+      os.makedirs(self._destDir)
+
     service = Service(GeckoDriverManager().install())
     options = webdriver.FirefoxOptions()
     options.set_preference('browser.download.folderList', 2)
