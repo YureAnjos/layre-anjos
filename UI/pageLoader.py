@@ -1,4 +1,4 @@
-from Pages.selectionPage import SelectionPage
+from .Pages.SelectionPage import SelectionPage
 
 class PageLoader:
     def __init__(self, master, current):

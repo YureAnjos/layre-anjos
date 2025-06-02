@@ -1,21 +1,22 @@
 import customtkinter as ctk
-from pageLoader import PageLoader
+from .PageLoader import PageLoader
+from .Services.DatasheetService import DataSheetService
 
 ctk.set_default_color_theme('dark-blue')
 
 class App(ctk.CTk):
-    def __init__(self, WebDriver):
+    def __init__(self, driver):
         super().__init__()
-        self.driver = WebDriver
         self.loader = PageLoader(self, 'selection')
+        self.DSService = DataSheetService(driver)
 
         self.title('Layre Anjos')
         self.geometry('1066x600')
 
         self.loader.start()
+        self.DSService.register()
 
-
-if __name__ == '__main__':
-    app = App('default')
+def bootstrap():
+    app = App()
 
     app.mainloop()
