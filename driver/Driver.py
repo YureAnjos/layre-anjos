@@ -1,68 +1,75 @@
-from webdriver_manager.firefox import GeckoDriverManager
+import os
+import time
+import shutil
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-import dotenv, os
+from webdriver_manager.firefox import GeckoDriverManager
+from dotenv import load_dotenv
 import settings.urls as urls
 import settings.paths as paths
 import settings.constants as constants
-import time
+from utils.BackupManager import BackupManager
 
 class Driver:
   def __init__(self):
-    dotenv.load_dotenv()
+    load_dotenv()
 
-    self._destDir = os.path.join(os.getcwd(), 'files', 'products')
+    self._downloadDir = Path.cwd() / 'files' / 'products'
+    self._downloadDir.mkdir(parents=True, exist_ok=True)
 
-    if not os.path.exists(self._destDir):
-      os.makedirs(self._destDir)
-
-    service = Service(GeckoDriverManager().install())
     options = webdriver.FirefoxOptions()
     options.set_preference('browser.download.folderList', 2)
     options.set_preference('browser.download.manager.showWhenStarting', False)
-    options.set_preference('browser.download.dir', self._destDir)
+    options.set_preference('browser.download.dir', str(self._downloadDir))
     options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")  # Tipos MIME para planilhas
 
+    service = Service(GeckoDriverManager().install())
     self.browser = webdriver.Firefox(service=service, options=options)
+    self.wait = WebDriverWait(self.browser, constants.elementWaitThreshold)
+    self.backupManager = BackupManager(Path.cwd() / 'files' / 'backups')
 
-  def _getElement(self, path):
-    return self.browser.find_element(By.XPATH, path)
-  
-  def _getElementAndSendKeys(self, path, keys):
-    self._getElement(path).send_keys(keys)
+  def _findElement(self, xpath):
+    return self.browser.find_element(By.XPATH, xpath)
 
-  def _getElementAndClick(self, path):
-    self._getElement(path).click()
+  def _waitForElement(self, xpath):
+    self.wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
 
-  def _awaitPresence(self, path):
-    WebDriverWait(self.browser, constants.elementWaitThreshold).until(EC.presence_of_element_located((By.XPATH, path)))
+  def _waitForClickable(self, xpath):
+    self.wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
 
-  def _awaitClickable(self, path):
-    WebDriverWait(self.browser, constants.elementWaitThreshold).until(EC.element_to_be_clickable((By.XPATH, path)))
+  def _scrollToElement(self, xpath):
+    element = self._findElement(xpath)
+    self.browser.execute_script('arguments[0].scrollIntoView(true);', element)
+    self.wait.until(
+      lambda driver: self.browser.execute_script(
+        "return document.documentElement.scrollTop + window.innerHeight >= arguments[0].getBoundingClientRect().top + window.pageYOffset",
+        element
+      )
+    )
 
   def _login(self):
     self.browser.get(urls.mainPageUrl)
 
-    self._awaitPresence(paths.emailInput)
-    self._getElementAndSendKeys(paths.emailInput, os.getenv('EMAIL'))
-    self._getElementAndSendKeys(paths.passwordInput, os.getenv('PASSWORD'))
+    self._waitForElement(paths.emailInput)
+    self._findElement(paths.emailInput).send_keys(os.getenv('EMAIL'))
+    self._findElement(paths.passwordInput).send_keys(os.getenv('PASSWORD'))
 
-    self._awaitClickable(paths.loginButton)
-    self._getElementAndClick(paths.loginButton)
-    WebDriverWait(self.browser, 10).until(EC.url_contains('dashboard'))
+    self._waitForClickable(paths.loginButton)
+    self._findElement(paths.loginButton).click()
+    self.wait.until(EC.url_contains('dashboard'))
 
   def _clearProductsDirectory(self):
     try:
-      for fileName in os.listdir(self._destDir):
-        filePath = os.path.join(self._destDir, fileName)
-        os.remove(filePath)
-    except Exception as ex:
-      print(ex)
+      for filePath in self._downloadDir.glob('*'):
+        filePath.unlink()
+    except OSError as e:
+      print(f"Error clearing download directory: {e}")
 
-  def getLatestProducts(self):
+  def downloadLatestProducts(self):
     fileName = None
 
     try:
@@ -71,27 +78,32 @@ class Driver:
 
       self.browser.get(urls.productsPageUrl)
 
-      self._awaitClickable(paths.downloadButton)
-      self._getElementAndClick(paths.downloadButton)
+      self._waitForElement(paths.downloadButton)
+      self._scrollToElement(paths.downloadButton) # ensure that the element is appearing
+      self._findElement(paths.downloadButton).click()
 
       startTime = time.time()
-      while (time.time() - startTime) < constants.productsDownloadThreshold:
-        files = os.listdir(self._destDir)
-        if len(files) > 0:
-          file = files[0]
-
-          if file.endswith('.xlsx') and not file.endswith('.part'):
-            fileName = file
+      while time.time() - startTime < constants.productsDownloadThreshold:
+        files = list(self._downloadDir.glob('*.xlsx'))
+        for file in files:
+          if not file.name.endswith('.part'):
+            fileName = file.name
             break
-
+        if fileName:
+          break
         time.sleep(1)
-    except Exception as ex:
-      print(ex)
 
-    self.browser.quit()
+      if fileName:
+        self.backupManager.saveBackup(self._downloadDir, fileName)
 
-    return fileName
+    except Exception as e:
+            print(f"Error downloading products: {e}")
+
+    finally:
+      self.browser.quit()
+
+    return str(self._downloadDir / fileName)
 
 driver = Driver()
-name = driver.getLatestProducts()
-print(name)
+name = driver.downloadLatestProducts()
+print('observa: ', name)
