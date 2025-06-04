@@ -5,10 +5,10 @@ from .Services.DatasheetService import DataSheetService
 ctk.set_default_color_theme('dark-blue')
 
 class App(ctk.CTk):
-    def __init__(self, driver):
+    def __init__(self):
         super().__init__()
         self.loader = PageLoader(self, 'selection')
-        self.DSService = DataSheetService(driver)
+        self.DSService = DataSheetService()
 
         self.title('Layre Anjos')
         self.geometry('1066x600')

@@ -9,9 +9,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from webdriver_manager.firefox import GeckoDriverManager
 from dotenv import load_dotenv
-import settings.urls as urls
-import settings.paths as paths
-import settings.constants as constants
+# import settings.urls as urls
+# import settings.paths as paths
+# import settings.constants as constants
+from .settings import urls
+from .settings import paths
+from .settings import constants
 from .utils.BackupManager import BackupManager
 
 class Driver:
@@ -104,6 +107,6 @@ class Driver:
 
     return str(self._downloadDir / fileName)
 
-driver = Driver()
-name = driver.downloadLatestProducts()
-print('observa: ', name)
+# driver = Driver()
+# name = driver.downloadLatestProducts()
+# print('observa: ', name)
