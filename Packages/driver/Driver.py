@@ -107,3 +107,8 @@ class Driver:
             self.browser.quit()
 
         return str(self._downloadDir / fileName)
+    
+    def getLatestProducts(self):
+        products = self.backupManager.getLatestFile()
+        return products
+    
