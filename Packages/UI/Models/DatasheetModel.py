@@ -6,3 +6,8 @@ class DataSheet:
 
     def show(self):
         print(self.file.to_string())
+    
+    def getRowByColumnValue(self, column, value):
+        data = self.file[self.file[column].str.contains(value)]
+
+        return data
