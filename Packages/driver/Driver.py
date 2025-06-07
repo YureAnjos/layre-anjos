@@ -37,6 +37,8 @@ class Driver:
         self.wait = WebDriverWait(self.browser, constants.elementWaitThreshold)
         self.backupManager = BackupManager(Path.cwd() / 'files' / 'backups')
 
+        self._login()
+
     def _findElement(self, xpath):
         return self.browser.find_element(By.XPATH, xpath)
 
@@ -80,7 +82,7 @@ class Driver:
 
         try:
             self._clearProductsDirectory()
-            self._login()
+            # self._login()
 
             self.browser.get(urls.productsPageUrl)
 
@@ -116,7 +118,7 @@ class Driver:
     
     def uploadProducts(self, path):
         try:
-            self._login()
+            # self._login()
 
             self.browser.get(urls.uploadPageUrl)
             self.browser.maximize_window()
