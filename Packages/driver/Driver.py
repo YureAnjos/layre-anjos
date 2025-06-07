@@ -33,6 +33,7 @@ class Driver:
         # Initialize Chrome WebDriver
         service = Service(ChromeDriverManager().install())
         self.browser = webdriver.Chrome(service=service, options=options)
+        self.browser.minimize_window()
         self.wait = WebDriverWait(self.browser, constants.elementWaitThreshold)
         self.backupManager = BackupManager(Path.cwd() / 'files' / 'backups')
 
