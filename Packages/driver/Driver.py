@@ -47,6 +47,7 @@ class Driver:
 
     def _scrollToElement(self, xpath):
         element = self._findElement(xpath)
+
         self.browser.execute_script('arguments[0].scrollIntoView(true);', element)
         self.wait.until(
             lambda driver: self.browser.execute_script(
@@ -112,3 +113,45 @@ class Driver:
         products = self.backupManager.getLatestFile()
         return products
     
+    def uploadProducts(self, path):
+        try:
+            self._login()
+
+            self.browser.get(urls.uploadPageUrl)
+            self.browser.maximize_window()
+
+            self._waitForElement(paths.uploadInput)
+            self._findElement(paths.uploadInput).send_keys(path)
+
+            self._waitForElement(paths.captchaIframe)
+            self._scrollToElement(paths.captchaIframe)
+            recaptcha_iframe = self._findElement(paths.captchaIframe)
+            self.browser.switch_to.frame(recaptcha_iframe)
+
+            self._waitForElement(paths.captchaAnchor)
+            self._waitForClickable(paths.captchaAnchor)
+            self._findElement(paths.captchaAnchor).click()
+
+            WebDriverWait(self.browser, 60).until(
+                lambda driver: self._findElement(paths.captchaAnchor).get_attribute('aria-checked') == 'true'
+            )
+
+            self.browser.switch_to.default_content()
+
+            self._findElement(paths.uploadButton).click()
+
+            while True:
+                try:
+                    self.browser.current_url
+                    time.sleep(1)
+                except Exception as e:
+                    break
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            try:
+                self.browser.quit()
+            except Exception:
+                pass

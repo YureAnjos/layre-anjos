@@ -21,4 +21,4 @@ class BackupManager:
     if not files:
       return None
     files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
-    return files[0]
+    return str(files[0])
