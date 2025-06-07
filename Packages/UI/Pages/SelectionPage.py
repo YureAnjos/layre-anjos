@@ -17,7 +17,7 @@ class SelectionPage(Page):
         self.addButton = ctk.CTkButton(self.mainFrame, text='+', width=40, height=40, font=('Arial', 20), command=lambda: self.newProduct(self.mainInput.getName(), self.mainInput.getPrice()))
         self.addButton.grid(row=0, column=1)
 
-        self.downloadLatestButton = ctk.CTkButton(self, text='Download Latest', width=300, height=40, font=('Arial', 20), command=DSService.downloadLatest)
+        self.downloadLatestButton = ctk.CTkButton(self, text='Download Latest', width=300, height=40, font=('Arial', 20), command=self.downloadLatest)
         self.downloadLatestButton.pack(pady=10, padx=10, side='left')
 
         self.NextButton = ctk.CTkButton(self, text='Next', width=150, height=35, command=self.next)
@@ -50,6 +50,14 @@ class SelectionPage(Page):
         
         for i, frame in enumerate(self.frames):
             frame.grid(row=i+1, column=0)
+    
+    def downloadLatest(self):
+        self.iconify()
+        try:
+            self.DSService.downloadLatest()
+        except:
+            pass
+        self.deiconify()
     
     def next(self):
         listedProducts = []

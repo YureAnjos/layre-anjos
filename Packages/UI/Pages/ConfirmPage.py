@@ -12,6 +12,12 @@ class ConfirmPage(Page):
 
         self.scrollFrame = ctk.CTkScrollableFrame(self, label_text='Update                     Code                     Barcode                     Name                     Old Price                     New Price')
         self.scrollFrame.pack(fill='both', expand=True)
+
+        self.uploadButton = ctk.CTkButton(self, text='Upload', command=self.upload)
+        self.uploadButton.pack(padx=10, pady=10, side='right')
+
+        self.returnButton = ctk.CTkButton(self, text='Return', command=self.returnCommand)
+        self.returnButton.pack(padx=10, pady=10, side='left')
     
     def setup(self, listedProducts):
         for product in listedProducts:
@@ -35,3 +41,23 @@ class ConfirmPage(Page):
                     self.frames.append(newFrame)
             except:
                 continue
+    
+    def returnCommand(self):
+        self.framesForget()
+        self.frames.clear()
+
+        self.navigate('selection')
+
+    def upload(self):
+        for frame in self.frames:
+            code = frame.codeField._text
+            name = frame.nameField._text
+            price = frame.getPrice()
+
+            self.DSService.updateFieldsByCode(code, {'Preço de Venda': float(price)})
+        
+        self.DSService.saveAndUpload()
+    
+    def framesForget(self):
+        for frame in self.frames:
+            frame.grid_forget()

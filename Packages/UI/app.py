@@ -15,7 +15,14 @@ class App(ctk.CTk):
 
         self.loader.start()
 
+
 def bootstrap():
     app = App()
 
+    app.attributes('-topmost', True)
+    app.update()
+    app.attributes('-topmost', False)
+    app.focus_force()
+
     app.mainloop()
+

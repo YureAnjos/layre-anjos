@@ -32,5 +32,5 @@ class LabelFrame(ctk.CTkFrame):
         self.newPriceField.delete('0.0', 'end')
         self.newPriceField.insert('0.0', value)
     
-    def getPrice(self, value):
+    def getPrice(self):
         return self.newPriceField.get("0.0", "end").strip()
