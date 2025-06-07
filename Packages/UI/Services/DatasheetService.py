@@ -7,11 +7,29 @@ class DataSheetService:
         self._usingDatasheet = None
         self.driver = Driver()
     
-    def register(self):
-        a = DataSheet(self.driver.downloadLatestProducts())
-        a.show()
+    def downloadLatest(self):
+        path = self.driver.downloadLatestProducts()
 
-        # if os.path.exists(path):
-        #     newDS = DataSheet(path)
+        if os.path.exists(path):
+            newDS = DataSheet(path)
             
-        #     self._usingDatasheet = newDS
+            self._usingDatasheet = newDS
+    
+    def getLatest(self):
+        if not self._usingDatasheet:
+            path = self.driver.getLatestProducts()
+
+            if os.path.exists(path):
+                newDS = DataSheet(path)
+
+                self._usingDatasheet = newDS
+
+    def findProductByName(self, name):
+        self.getLatest()
+
+        data = self._usingDatasheet.getRowByColumnValue('Descrição', name)
+
+        if data.empty:
+            return None
+
+        return data

@@ -5,9 +5,10 @@ class Page(CTkFrame):
         super().__init__(master, fg_color='transparent')
         self.loaded = False
     
-    def load(self):
+    def load(self, navigate):
         self.place(relwidth=1, relheight=1)
         self.loaded = True
+        self.navigate = navigate
     
     def unload(self):
         self.place_forget()
