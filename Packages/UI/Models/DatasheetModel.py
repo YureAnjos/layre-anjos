@@ -26,7 +26,11 @@ class DataSheet:
         folderPath = rootPath + '\\' + 'files\\upload'
 
         if not os.path.exists(folderPath):
-            os.mkdir(folderPath)
+            try:
+                os.mkdir(folderPath)
+            except Exception as e:
+                print(e)
+                return True, None
             
             try:
                 f = open(self.uploadPath, 'x')

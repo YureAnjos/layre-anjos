@@ -50,13 +50,15 @@ class ConfirmPage(Page):
 
     def upload(self):
         for frame in self.frames:
-            code = frame.codeField._text
-            name = frame.nameField._text
-            price = frame.getPrice()
+            if frame.checkbox.get() == 1:
+                code = frame.codeField._text
+                price = frame.getPrice()
 
-            self.DSService.updateFieldsByCode(code, {'Preço de Venda': float(price)})
+                self.DSService.updateFieldsByCode(code, {'Preço de Venda': float(price)})
         
+        self.iconify()
         self.DSService.saveAndUpload()
+        self.deiconify()
     
     def framesForget(self):
         for frame in self.frames:
