@@ -5,7 +5,7 @@ import sys
 class DataSheet:
     def __init__(self, file):
         self.file = pd.read_excel(file)
-        self.uploadPath = 'files/upload/upload.xlsx'
+        self.uploadPath = 'files\\upload\\upload.xlsx'
 
     def show(self):
         print(self.file.to_string())
@@ -25,11 +25,27 @@ class DataSheet:
         rootPath = sys.path[0]
         folderPath = rootPath + '\\' + 'files\\upload'
 
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+        # ARRUMA ESSA BOMBA AQ PARCEIRO
+
         if not os.path.exists(folderPath):
             try:
                 os.mkdir(folderPath)
             except Exception as e:
-                print(e)
                 return True, None
             
             try:

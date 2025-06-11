@@ -19,7 +19,9 @@ class Driver:
 
         self._downloadDir = Path.cwd() / 'files' / 'products'
         self._downloadDir.mkdir(parents=True, exist_ok=True)
+        self.isLoggedIn = False
 
+    def load(self):
         # Set up Chrome options
         options = webdriver.ChromeOptions()
         # Configure Chrome to download files to the specified directory without prompting
@@ -30,10 +32,13 @@ class Driver:
             "safebrowsing.enabled": True
         })
 
+        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option("useAutomationExtension", False)
+
         # Initialize Chrome WebDriver
         service = Service(ChromeDriverManager().install())
         self.browser = webdriver.Chrome(service=service, options=options)
-        self.browser.minimize_window()
         self.wait = WebDriverWait(self.browser, constants.elementWaitThreshold)
         self.backupManager = BackupManager(Path.cwd() / 'files' / 'backups')
 
@@ -60,6 +65,7 @@ class Driver:
         )
 
     def _login(self):
+        self.browser.maximize_window()
         self.browser.get(urls.mainPageUrl)
 
         self._waitForElement(paths.emailInput)
@@ -69,6 +75,9 @@ class Driver:
         self._waitForClickable(paths.loginButton)
         self._findElement(paths.loginButton).click()
         self.wait.until(EC.url_contains('dashboard'))
+        self.browser.minimize_window()
+
+        self.isLoggedIn = True
 
     def _clearProductsDirectory(self):
         try:
@@ -82,9 +91,15 @@ class Driver:
 
         try:
             self._clearProductsDirectory()
-            # self._login()
+            self.browser.maximize_window()
 
-            self.browser.get(urls.productsPageUrl)
+            self._findElement(paths.openRegistersMenu).click()
+            self._waitForClickable(paths.productsPageButton)
+            self._findElement(paths.productsPageButton).click()
+
+            self.wait.until(EC.url_contains('produtos'))
+
+            time.sleep(1) # Essa merda aq é extremamente necessaria!
 
             self._waitForElement(paths.downloadButton)
             self._scrollToElement(paths.downloadButton)  # Ensure that the element is visible
@@ -108,7 +123,7 @@ class Driver:
             print(f"Error downloading products: {e}")
 
         finally:
-            self.browser.quit()
+            self.browser.minimize_window()
 
         return str(self._downloadDir / fileName)
     
@@ -118,10 +133,13 @@ class Driver:
     
     def uploadProducts(self, path):
         try:
-            # self._login()
-
-            self.browser.get(urls.uploadPageUrl)
             self.browser.maximize_window()
+            
+            self._findElement(paths.openRegistersMenu).click()
+            self._waitForClickable(paths.uploadPageButton)
+            self._findElement(paths.uploadPageButton).click()
+
+            self.wait.until(EC.url_contains('importar'))
 
             self._waitForElement(paths.uploadInput)
             self._findElement(paths.uploadInput).send_keys(path)
@@ -143,18 +161,5 @@ class Driver:
 
             self._findElement(paths.uploadButton).click()
 
-            while True:
-                try:
-                    self.browser.current_url
-                    time.sleep(1)
-                except Exception as e:
-                    break
-
         except Exception as e:
             print(e)
-
-        finally:
-            try:
-                self.browser.quit()
-            except Exception:
-                pass

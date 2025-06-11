@@ -1,12 +1,11 @@
 import os
 from ..Models.DatasheetModel import DataSheet
-from ...driver.Driver import Driver
 
 class DataSheetService:
-    def __init__(self):
+    def __init__(self, driver):
         self._usingDatasheet = None
-        self.driver = Driver()
-    
+        self.driver = driver
+
     def downloadLatest(self):
         path = self.driver.downloadLatestProducts()
 
