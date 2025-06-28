@@ -5,6 +5,12 @@ __pycache__/
 *.pyo
 *.pyd
 *.env
+<<<<<<< HEAD
 main.spec
 build/
 dist/
+=======
+build/
+dist/
+main.spec
+>>>>>>> 8794dec61c2d16ac6d2e2a2f8bdc066258e0bcdd

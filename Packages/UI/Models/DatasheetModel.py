@@ -25,29 +25,13 @@ class DataSheet:
         rootPath = sys.path[0]
         folderPath = rootPath + '\\' + 'files\\upload'
 
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-        # ARRUMA ESSA BOMBA AQ PARCEIRO
-
         if not os.path.exists(folderPath):
             try:
                 os.mkdir(folderPath)
             except Exception as e:
                 return True, None
-            
+        
+        if not os.path.exists(rootPath + '\\' + self.uploadPath):
             try:
                 f = open(self.uploadPath, 'x')
                 f.close()

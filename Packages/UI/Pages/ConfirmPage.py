@@ -26,6 +26,7 @@ class ConfirmPage(Page):
 
             try:
                 indexes = data.index.to_list()
+                self.scrollFrame.grid_columnconfigure(0, weight=1)
                 for i in indexes:
                     newFrame = LabelFrame(self.scrollFrame)
                     newFrame.configure(width=self.scrollFrame.size()[0])
@@ -36,7 +37,7 @@ class ConfirmPage(Page):
                     newFrame.oldPriceField.configure(text=data.at[i, 'Preço de Venda'])
                     newFrame.setPrice(product['price'])
 
-                    newFrame.grid(row=len(self.frames), column=1)
+                    newFrame.grid(row=len(self.frames), column=0, sticky="ew")
 
                     self.frames.append(newFrame)
             except:
