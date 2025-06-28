@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import sys
+from rapidfuzz import fuzz
 
 class DataSheet:
     def __init__(self, file):
@@ -10,10 +11,21 @@ class DataSheet:
     def show(self):
         print(self.file.to_string())
     
-    def getRowByColumnValue(self, column, value):
-        data = self.file[self.file[column].str.contains(value)]
-
-        return data
+    def getRowByColumnValue(self, column, value, threshold = 70):
+        if self.file is None:
+            raise ValueError("Nenhum arquivo carregado. Use load_file primeiro.")
+        
+        if column not in self.file.columns:
+            raise ValueError(f"A coluna '{column}' não existe no DataFrame.")
+        
+        value_normalized = value.lower().strip()
+        
+        mask = self.file[column].apply(
+            lambda x: fuzz.ratio(str(x).lower().strip(), value_normalized) >= threshold 
+            if pd.notna(x) else False
+        )
+        
+        return self.file[mask]
 
     def update(self, key, kidentifier, value, videntifier):
         condition = self.file[kidentifier] == key

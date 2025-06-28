@@ -23,7 +23,6 @@ class ConfirmPage(Page):
         for product in listedProducts:
             data = self.DSService.findProductByName(product['name'])
 
-
             try:
                 indexes = data.index.to_list()
                 self.scrollFrame.grid_columnconfigure(0, weight=1)
