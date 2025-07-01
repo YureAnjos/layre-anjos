@@ -6,10 +6,12 @@ from rapidfuzz import fuzz
 class DataSheet:
     def __init__(self, file):
         self.file = pd.read_excel(file)
+        self.uploadFile = pd.DataFrame(columns=[*self.file.columns])
         self.uploadPath = 'files\\upload\\upload.xlsx'
 
     def show(self):
         print(self.file.to_string())
+        print(self.uploadFile.to_string())
     
     def getRowByColumnValue(self, column, value, threshold = 70):
         if self.file is None:
@@ -29,7 +31,10 @@ class DataSheet:
 
     def update(self, key, kidentifier, value, videntifier):
         condition = self.file[kidentifier] == key
-        self.file.loc[condition, videntifier] = value
+        if self.uploadFile.loc[condition].empty:
+            self.uploadFile = pd.concat([self.uploadFile, self.file.loc[condition]], ignore_index=True) 
+
+        self.uploadFile.loc[condition, videntifier] = value
 
         return True
     
@@ -56,5 +61,5 @@ class DataSheet:
         if not os.path.exists(rootPath + '\\' + self.uploadPath):
             return True, None
 
-        self.file.to_excel(self.uploadPath, index=False)
+        self.uploadFile.to_excel(self.uploadPath, index=False)
         return False, rootPath + '\\' + self.uploadPath
