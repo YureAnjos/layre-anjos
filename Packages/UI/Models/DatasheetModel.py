@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import sys
 from rapidfuzz import fuzz
-
+import time
 class DataSheet:
     def __init__(self, file):
         self.file = pd.read_excel(file)
@@ -10,7 +10,7 @@ class DataSheet:
         self.uploadPath = 'files\\upload\\upload.xlsx'
 
     def show(self):
-        print(self.file.to_string())
+        # print(self.file.to_string())
         print(self.uploadFile.to_string())
     
     def getRowByColumnValue(self, column, value, threshold = 70):
@@ -31,10 +31,13 @@ class DataSheet:
 
     def update(self, key, kidentifier, value, videntifier):
         condition = self.file[kidentifier] == key
-        if self.uploadFile.loc[condition].empty:
+        uploadCondition = self.uploadFile[kidentifier] == key
+
+        if self.uploadFile.loc[uploadCondition].empty:
             self.uploadFile = pd.concat([self.uploadFile, self.file.loc[condition]], ignore_index=True) 
 
-        self.uploadFile.loc[condition, videntifier] = value
+        uploadCondition = self.uploadFile[kidentifier] == key
+        self.uploadFile.loc[uploadCondition, videntifier] = value
 
         return True
     
@@ -62,4 +65,5 @@ class DataSheet:
             return True, None
 
         self.uploadFile.to_excel(self.uploadPath, index=False)
+        self.uploadFile = pd.DataFrame(columns=[*self.file.columns])
         return False, rootPath + '\\' + self.uploadPath
